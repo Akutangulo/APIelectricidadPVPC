@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi API Data - Precio electricidad</title>
+<style>
+body{
+    font-size: 1.3em;
+    text-align: center;
+    font-family: 'Roboto', "Helvetica", "Arial", sans-serif;
+}
+
+#price-data{
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.price{
+  padding: 15px;
+  margin: 2px;
+  border: 2px solid red;
+  border-radius: 8px;
+}
+
+.hour{
+  background-color: aqua;
+  font-size: 1em;
+}
+
+.rojo {
+    background: red;
+    font-size: 1.2em;
+}
+
+.verde {
+    background: green;
+    font-size: 1.8em;
+    color: white;
+}
+
+.azul {
+    color: blue;
+}
+
+.naranja {
+    color: orange;
+}
+
+
+</style>
+</head>
+<body>
+
+    <div id="price-data"></div>
+<br>
+    <a href="precio-electricidad.html">Precio con API de api.preciodelaluz.org</a>
+
+    <!-- Hora JS -->
+    <script>
+function displayCurrentTime() {
+  const now = new Date();
+  const hours = now.getHours(); // Obtener la hora actual
+  const timeString = now.toLocaleTimeString();
+
+  const priceDataDiv = document.querySelector("#price-data");
+  const priceDivs = priceDataDiv.querySelectorAll(".price");
+
+  // Buscar el div de precio correspondiente y agregar la hora
+  for (let i = 0; i < priceDivs.length; i++) {
+    const hourSpan = priceDivs[i].querySelector(".hour");
+    const hour = parseInt(hourSpan.textContent);
+    if (hours === hour) {
+      hourSpan.textContent = hour + "<br>" + " (" + timeString + ") " + "<br>";
+    }
+  }
+
+}
+
+    //Llamamos a la function displayCurrentTime que está al principio del script. Se recomienda agregar la función en el bloque de código que se ejecuta después de que los datos de la API han sido obtenidos y procesados correctamente. De esta manera, aseguramos que la petición se haya completado antes de intentar actualizar la hora en la página     
+    displayCurrentTime();
+    setInterval(displayCurrentTime, 1000); // Actualizar la hora cada segundo
+
+
+    //App JS
+       const apiUrl = "api.json";
+const priceDataDiv = document.querySelector("#price-data");
+
+fetch(apiUrl)
+  .then(response => response.json())
+  .then(data => {
+    // Calcular el precio máximo, mínimo y medio
+    let prices = [];
+    let sum = 0;
+    let max = -Infinity;
+    let min = Infinity;
+    for (const key in data) {
+      const priceData = data[key];
+      const price = priceData.price;
+      prices.push(price);
+      sum += price;
+      if (price > max) {
+        max = price;
+      }
+      if (price < min) {
+        min = price;
+      }
+    }
+    const avg = sum / prices.length;
+
+    // Iterar a través de los precios y establecer las clases de CSS adecuadas
+    for (const key in data) {
+      const priceData = data[key];
+      const priceDiv = document.createElement("div");
+      priceDiv.classList.add("price");
+
+      const dateSpan = document.createElement("span");
+      dateSpan.textContent = priceData.date;
+
+      const hourSpan = document.createElement("span");
+      hourSpan.classList.add("hour"); // Agregar una clase para identificar la hora
+      hourSpan.textContent = priceData.hour + ":00 = " ;
+
+      const priceSpan = document.createElement("span");
+      priceSpan.textContent = priceData.price + " €";
+
+      if (priceData.price === max) {
+        priceDiv.classList.add("rojo");
+      } else if (priceData.price === min) {
+        priceDiv.classList.add("verde");
+      } else if (priceData.price > avg) {
+        priceSpan.classList.add("naranja");
+      } else {
+        priceSpan.classList.add("azul");
+      }
+      
+      const br = document.createElement("br");
+      priceDiv.appendChild(dateSpan);
+      priceDiv.appendChild(br);   
+      priceDiv.appendChild(hourSpan);
+      priceDiv.appendChild(priceSpan);
+      priceDataDiv.appendChild(priceDiv);
+    }
+    // Llamar a la función displayCurrentTime() después de procesar los datos de la API
+  })
+  .catch(error => {
+    console.error(error);
+  });
+    </script>
+
+    <!-- invertir como se devuelve la lista de datos convirtiendo data en un array y luego aplicando la función reverse()
+    <script>
+        const apiUrl = "api.json";
+const priceDataDiv = document.querySelector("#price-data");
+
+fetch(apiUrl)
+  .then(response => response.json())
+  .then(data => {
+    // Convertir data en un array y revertir su orden
+    data = Object.values(data).reverse();
+
+    // Calcular el precio máximo, mínimo y medio
+    let prices = [];
+    let sum = 0;
+    let max = -Infinity;
+    let min = Infinity;
+    for (const key in data) {
+      const priceData = data[key];
+      const price = priceData.price;
+      prices.push(price);
+      sum += price;
+      if (price > max) {
+        max = price;
+      }
+      if (price < min) {
+        min = price;
+      }
+    }
+    const avg = sum / prices.length;
+
+    // Iterar a través de los precios y establecer las clases de CSS adecuadas
+    for (const key in data) {
+      const priceData = data[key];
+      const priceDiv = document.createElement("div");
+      priceDiv.classList.add("price");
+
+      const dateSpan = document.createElement("span");
+      dateSpan.textContent = priceData.date;
+
+      const hourSpan = document.createElement("span");
+      hourSpan.classList.add("hour"); // Agregar una clase para identificar la hora
+      hourSpan.textContent = priceData.hour;
+
+      const priceSpan = document.createElement("span");
+      priceSpan.textContent = priceData.price;
+      if (priceData.price === max) {
+        priceSpan.classList.add("rojo");
+      } else if (priceData.price === min) {
+        priceSpan.classList.add("verde");
+      } else if (priceData.price > avg) {
+        priceSpan.classList.add("naranja");
+      } else {
+        priceSpan.classList.add("azul");
+      }
+
+      priceDiv.appendChild(dateSpan);
+      priceDiv.appendChild(hourSpan);
+      priceDiv.appendChild(priceSpan);
+      priceDataDiv.appendChild(priceDiv);
+    }
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+    </script>-->
+</body>
+</html>
