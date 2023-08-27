@@ -14,7 +14,7 @@
         div {
             border: 2px solid #000;
             border-radius: 8px;
-            padding: 15px;
+            padding: 20px;
             margin: 2px;
         }
         
@@ -26,6 +26,7 @@
         
         #electricity-container {
             border: none;
+            padding: 20px;
         }
         
         .current-hour {
@@ -99,8 +100,28 @@
     var container = document.getElementById('electricity-container');
     var currentDate = new Date();
 
+
     // URL de la API
-    var apiUrl = 'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=today00:00&end_date=tomorrow00:00&time_trunc=hour';
+var apiUrl = 'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=' +
+    formatDate(currentDate) + '00:00&end_date=' + formatDate(getTomorrowDate(currentDate)) + '00:00&time_trunc=hour';
+
+// ... Resto del código ...
+
+// Función para formatear la fecha en el formato necesario para la URL de la API
+function formatDate(date) {
+    var year = date.getFullYear();
+    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+    var day = date.getDate().toString().padStart(2, '0');
+    return year + month + day;
+}
+
+// Función para obtener la fecha de mañana
+function getTomorrowDate(date) {
+    var tomorrow = new Date(date);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+}
+
 
     // Obtener los datos de la API
     fetch(apiUrl)
@@ -122,30 +143,30 @@
             averagePriceDiv.innerHTML = 'El precio medio de la luz hoy ' + apiDay + ' es de ' + ((averagePrice / 1000)).toFixed(3) + ' € por Kilovatio';
 
            // Recorrer los datos y agregar divs al contenedor
-pricesData.forEach(function(item) {
-    var datetime = new Date(item.datetime);
-    var price = item.value.toFixed(2);
-    var div = document.createElement('div');
+            pricesData.forEach(function(item) {
+                var datetime = new Date(item.datetime);
+                var price = item.value.toFixed(2);
+                var div = document.createElement('div');
 
-    div.classList.add(
-        datetime.getHours() === currentDate.getHours() ? 'current-hour' :
-        datetime < currentDate ? 'past-hour' :
-        item.value === getMinPrice(pricesData).value ? 'min-price' :
-        item.value === getMaxPrice(pricesData).value ? 'max-price' :
-        item.value < averagePrice ? 'lower-than-average' :
-        item.value > averagePrice ? 'higher-than-average' :
-        ''
-    );
+            div.classList.add(
+                datetime.getHours() === currentDate.getHours() ? 'current-hour' :
+                datetime < currentDate ? 'past-hour' :
+                item.value === getMinPrice(pricesData).value ? 'min-price' :
+                item.value === getMaxPrice(pricesData).value ? 'max-price' :
+                item.value < averagePrice ? 'lower-than-average' :
+                item.value > averagePrice ? 'higher-than-average' :
+                ''
+            );
 
-    var timeSpan = document.createElement('span');
-    timeSpan.innerHTML = getCurrentTime(datetime) + '<br>';
-
-    var priceSpan = document.createElement('span');
-    priceSpan.innerHTML = (price / 1000).toFixed(3) + ' € por Kilovatio';
-
-    div.appendChild(timeSpan);
-    div.appendChild(priceSpan);
-    container.appendChild(div);
+                var timeSpan = document.createElement('span');
+                timeSpan.innerHTML = getCurrentTime(datetime) + '<br>';
+                        
+                var priceSpan = document.createElement('span');
+                priceSpan.innerHTML = (price / 1000).toFixed(3) + ' € por Kilovatio';
+                        
+                div.appendChild(timeSpan);
+                div.appendChild(priceSpan);
+                container.appendChild(div);
 });
 
         })
