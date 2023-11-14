@@ -1,0 +1,172 @@
+Quiero que el footer se muestre en la parte inferior de la página y que el div que contiene los H1 con clase contenedor no desplace el el contenido de la página
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, maximum-scale=1">
+<!---------------------------------->
+
+<style>
+
+	.contenedor {
+		height: 500px; /* Altura fija para mantener el espacio */
+		position: relative;
+	}
+
+	.footer {
+		left: 0;
+		bottom: 0;
+		padding: 20px;
+		text-align: center;
+		display: block;		
+		width: 100%;
+	}
+	/* Estilos del logotipo del pie de página */
+	.footer-logo {
+		margin: 15px auto 35px;
+		width: 76px;
+	}
+
+	/* Estilos del texto de derechos de autor */
+	.copyright {
+		color: #cccccc;		
+	}
+
+	/* Estilos para los enlaces de derechos de autor */
+	.copyright a {
+		text-decoration: none;
+		transition: all 0.3s ease-in-out;
+	}
+
+	/* Incrementa el tamaño de la fuente en hover para los enlaces de derechos de autor */
+	.copyright a:hover {
+		font-size: larger;
+	}
+
+	body {
+		background: #000;
+		margin: 0;
+		font-size: 1rem;
+		width: 100%;
+		overflow-x: hidden; /* Ocultar la barra de desplazamiento horizontal */
+
+	}
+
+	@font-face {
+		font-family: 'bauhouse_akutangulo';
+		src: url('bauhouse_akutangulo.eot'); /* EOT file for IE */
+		src: url('bauhouse_akutangulo.eot?#iefix') format('embedded-opentype'),
+			url('bauhouse_akutangulo.ttf') format('truetype'); /* TTF file for CSS3 browsers */
+	}
+
+	.aku {
+		font-family: 'bauhouse_akutangulo';
+		text-align: center;
+		position: relative;
+		color: #9400D3;
+    	animation: glow 10s ease-in-out infinite; 
+	}
+
+	h1.aku {
+		width: 90%;
+		padding: 10px;
+		line-height: 1.5;
+		font-size: 10rem;
+		position: absolute;
+    	animation: wobble 7s ease-in-out infinite;
+	}
+	
+
+	@keyframes wobble {
+		0%,
+		100% {
+			transform: rotate3d(1, 1, 0, 30deg);
+		}
+		25% {
+			transform: rotate3d(-1, 1, 0, 30deg);
+		}
+		50% {
+			transform: rotate3d(-1, -1, 0, 30deg);
+		}
+		75% {
+			transform: rotate3d(1, -1, 0, 30deg);
+		}
+	}
+
+	@keyframes glow {
+		0%,
+		100% {
+			text-shadow: 0 0 30px DeepPink;
+		}
+		25% {
+			text-shadow: 0 0 30px Lime;
+		}
+		50% {
+			text-shadow: 0 0 30px Magenta;
+		}
+		75% {
+			text-shadow: 0 0 30px MediumSlateBlue;
+		}
+	}
+
+	h1:nth-child(2){ transform:translateZ(5px); }
+	h1:nth-child(3){ transform:translateZ(10px); }
+	h1:nth-child(4){ transform:translateZ(15px); }
+	h1:nth-child(5){ transform:translateZ(20px); }
+	h1:nth-child(6){ transform:translateZ(25px); }
+	h1:nth-child(7){ transform:translateZ(30px); }
+	h1:nth-child(8){ transform:translateZ(35px); }
+
+</style>
+
+</head>
+<body>
+
+<div class="contenedor" style="background-color: #cccccc;">
+ 	<figure class="aku">
+		<h1 class="aku">Akutangulo</h1>
+		<h1 class="aku">Akutangulo</h1>
+		<h1 class="aku">Akutangulo</h1>
+		<h1 class="aku">Akutangulo</h1>
+		<h1 class="aku">Akutangulo</h1>
+		<h1 class="aku">Akutangulo</h1>
+		<h1 class="aku">Akutangulo</h1>
+    	<h1 class="aku">Akutangulo</h1>
+	 </figure>
+</div>
+ 
+
+<div style="height: 800px;"></div>
+
+    <footer class="footer">
+      <div class="container">
+
+          <div class="footer-logo">
+            <a href="https://akutangulo.com">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="55.000000pt" height="57.000000pt" viewBox="0 0 55.000000 57.000000" preserveAspectRatio="xMidYMid meet">
+            <metadata>Akutangulo diseño y creación de páginas web, posicionamiento SEO y fotógrafo oficial de google maps street view trusted en valladolid. Oscar Navarro. </metadata>
+            <g transform="translate(0.000000,57.000000) scale(0.100000,-0.100000)" fill="#9300D3" stroke="none">
+              <path fill="#9300D3" d="M175 551 c-112 -52 -169 -207 -120 -329 19 -45 86 -112 172 -169 51 -35 52 -35 77 -16 24 17 25 22 26 125 l0 106 -38 -5 c-51 -7 -77 21 -68 72 8 42 41 60 80 45 40 -15 46 -40 46 -182 l0 -133 90 9 90 10 0 156 c0 147 -1 159 -25 207 -26 51 -72 91 -128 112 -46 18 -157 13 -202 -8z"/>
+            </g>
+            </svg>
+        	</a>
+		   </div>
+
+        <div class="copyright">
+          <div>Web diseñada con amor ❤️ por <a href="https://akutangulo.com" rel="noopener" target="_blank" title="Akutangulo - Páginas web y posicionamiento S.E.O." aria-label="Akutangulo - Páginas web y posicionamiento SEO" class="aku">Akutangulo.com</a></div>
+
+          <div>Copyright © <span id="copyright-year"></span> by <a href="https://akutangulo.com" rel="noopener" target="_blank" title="Akutangulo - Páginas web y posicionamiento S.E.O." aria-label="Akutangulo - Páginas web y posicionamiento SEO" class="aku">Akutangulo</a>
+          </div>
+        </div>
+
+      </div>
+ 	</footer>
+
+      <script>
+        //Se asigna directamente el año actual al contenido del elemento span con id="copyright-year" utilizando textContent. La función new Date().getFullYear() se utiliza para obtener el año actual de forma dinámica
+        document.getElementById("copyright-year").textContent = new Date().getFullYear();
+      </script>
+
+</body>
+</html>

@@ -5,6 +5,43 @@
     <title>Precios de Electricidad</title>
     
     <style>
+        :root {
+            --background-electricidad: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+            --borderWidth: 3px;
+        }
+
+        .gradient-border {         
+            position: relative;
+            border-radius: var(--borderWidth);
+        }
+        
+        .gradient-border:after {
+            content: '';
+            position: absolute;
+            top: calc(-1 * var(--borderWidth));
+            left: calc(-1 * var(--borderWidth));
+            height: calc(100% + var(--borderWidth) * 2);
+            width: calc(100% + var(--borderWidth) * 2);
+            background: var(--background-electricidad);
+            border-radius: calc(2 * var(--borderWidth));
+            z-index: -1;
+            animation: animatedgradient 4s ease alternate infinite;
+            background-size: 300% 300%;
+        }
+        
+        @keyframes animatedgradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
         body {
             font-size: 1.3em;
             text-align: center;
@@ -56,37 +93,7 @@
             background-color: #fcb7af;
         }
         
-        .gradient-border {
-            --borderWidth: 3px;
-            position: relative;
-            border-radius: var(--borderWidth);
-        }
-        
-        .gradient-border:after {
-            content: '';
-            position: absolute;
-            top: calc(-1 * var(--borderWidth));
-            left: calc(-1 * var(--borderWidth));
-            height: calc(100% + var(--borderWidth) * 2);
-            width: calc(100% + var(--borderWidth) * 2);
-            background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
-            border-radius: calc(2 * var(--borderWidth));
-            z-index: -1;
-            animation: animatedgradient 4s ease alternate infinite;
-            background-size: 300% 300%;
-        }
-        
-        @keyframes animatedgradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
+       
     </style>
 </head>
 <body>
@@ -103,7 +110,7 @@
 
     // URL de la API
 var apiUrl = 'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=' +
-    formatDate(currentDate) + '00:00&end_date=' + formatDate(getTomorrowDate(currentDate)) + '00:00&time_trunc=hour';
+    formatDate(currentDate) + '00:00&end_date=' + formatDate(getTomorrowDate(currentDate)) + '23:59&time_trunc=hour';
 
 // ... Resto del código ...
 

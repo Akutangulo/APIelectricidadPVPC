@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Precios de Electricidad</title>
+  <style>
+    body {
+          font-size: 1.3em;
+          text-align: center;
+          font-family: 'Roboto', "Helvetica", "Arial", sans-serif;
+          width: 100%;
+        }
+
+    .mejorPrecio { 
+          background-color: #77dd77;
+          font-size: 2em;
+        }
+        
+        .peorPrecio { 
+          background-color: #ff6961;
+          color: #fff;
+        }
+
+        .mejoresPrecios {
+            background-color: #b0f2c2;
+        }
+        
+        .peoresPrecios {
+            background-color: #fcb7af;
+        }
+
+        .precioActual {
+          font-size: 2.5rem;
+          border: 2px solid #b2e2f2;
+        }
+
+        .precioPasado {
+          background-color: #c5c6c8;
+          font-size: 0.8rem;
+          /*display: none;*/
+        }
+
+    .precioActual.mejorPrecio {
+      color: green;
+    }
+
+    .precioActual.peorPrecio {
+      color: red;
+    }
+
+    .precioActual.mejoresPrecios {
+      color: blue;
+    }
+
+    .precioActual.peoresPrecios {
+      color: orange;
+    }
+  </style>
+</head>
+<body>
+  <div id="informacionDiaria" class="informacionDiaria"></div>
+  <div id="preciosContainer"></div>
+
+  <script>
+    function getFormattedDate(date) {
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      return date.toLocaleDateString('es-ES', options);
+    }
+
+    function updateCurrentTime() {
+      const currentTime = new Date();
+      const formattedTime = currentTime.toLocaleTimeString('es-ES');
+      const precioActualElement = document.getElementById('precioActual');
+      if (precioActualElement) {
+        precioActualElement.textContent = formattedTime;
+      }
+    }
+
+    function fetchElectricityPrices() {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      const startDate = today.toISOString().split('T')[0];
+      const endDate = tomorrow.toISOString().split('T')[0];
+
+      const apiUrl = `https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${startDate}T00:00&end_date=${endDate}T23:59&time_trunc=hour`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const prices = data.included.find(item => item.type === 'PVPC (€/MWh)');
+          const averagePrice = prices.attributes.values.reduce((sum, value) => sum + value.value, 0) / prices.attributes.values.length;
+
+          const currentDate = new Date();
+          const formattedDate = getFormattedDate(currentDate);
+
+          let lowestPrice = Infinity;
+          let highestPrice = -Infinity;
+          let lowestPriceHour = '';
+          let highestPriceHour = '';
+
+          prices.attributes.values.forEach(value => {
+            const priceDate = new Date(value.datetime);
+            if (priceDate.getDate() === currentDate.getDate()) {
+              const priceDiv = document.createElement('div');
+
+              if (priceDate < new Date()) {
+                priceDiv.classList.add('precioPasado');
+              } else if (value.value < lowestPrice) {
+                lowestPrice = value.value;
+                lowestPriceHour = priceDate.getHours();
+              } else if (value.value > highestPrice) {
+                highestPrice = value.value;
+                highestPriceHour = priceDate.getHours();
+              }
+
+              if (priceDate.getHours() === new Date().getHours()) {
+                priceDiv.classList.add('precioActual');
+
+                if (value.value === lowestPrice) {
+                  priceDiv.classList.add('mejorPrecio');
+                } else if (value.value === highestPrice) {
+                  priceDiv.classList.add('peorPrecio');
+                } else if (value.value < averagePrice) {
+                  priceDiv.classList.add('mejoresPrecios');
+                } else {
+                  priceDiv.classList.add('peoresPrecios');
+                }
+
+                priceDiv.innerHTML = `
+                  <span class="precioTime">Hora actual: <span id="precioActual"></span></span><br>
+                  <span class="precioValue">${value.value}</span>€
+                `;
+              } else {
+                priceDiv.innerHTML = `
+                  <span class="precioTime">${priceDate.getHours()}:00</span><br>
+                  <span class="precioValue">${value.value}</span>€
+                `;
+              }
+
+              document.getElementById('preciosContainer').appendChild(priceDiv);
+            }
+          });
+
+          document.getElementById('informacionDiaria').innerHTML = `
+            <p>El precio medio de la luz hoy ${formattedDate} es ${averagePrice.toFixed(2)}€</p>
+            <p>Precio más alto del día actual (${highestPriceHour}:00): <span id="precioMasAlto">${highestPrice}</span>€</p>
+            <p>Precio más bajo del día actual (${lowestPriceHour}:00): <span id="precioMasBajo">${lowestPrice}</span>€</p>
+          `;
+
+          const priceDivs = document.querySelectorAll('.precioValue');
+          priceDivs.forEach(div => {
+            const value = parseFloat(div.textContent);
+            if (value === lowestPrice) {
+              div.parentNode.classList.add('mejorPrecio');
+            } else if (value === highestPrice) {
+              div.parentNode.classList.add('peorPrecio');
+            } else if (value < averagePrice) {
+              div.parentNode.classList.add('mejoresPrecios');
+            } else {
+              div.parentNode.classList.add('peoresPrecios');
+            }
+          });
+
+          updateCurrentTime();
+          setInterval(updateCurrentTime, 1000);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    fetchElectricityPrices();
+  </script>
+</body>
+</html>
