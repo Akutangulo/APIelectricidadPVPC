@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -317,3 +318,209 @@
   }
 </script>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Precios de Electricidad</title>
+    
+    <style>
+        :root {
+            --background-electricidad: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+            --borderWidth: 3px;
+        }
+
+        .gradient-border {         
+            position: relative;
+            border-radius: var(--borderWidth);
+        }
+        
+        .gradient-border:after {
+            content: '';
+            position: absolute;
+            top: calc(-1 * var(--borderWidth));
+            left: calc(-1 * var(--borderWidth));
+            height: calc(100% + var(--borderWidth) * 2);
+            width: calc(100% + var(--borderWidth) * 2);
+            background: var(--background-electricidad);
+            border-radius: calc(2 * var(--borderWidth));
+            z-index: -1;
+            animation: animatedgradient 4s ease alternate infinite;
+            background-size: 300% 300%;
+        }
+        
+        @keyframes animatedgradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
+        body {
+            font-size: 1.3em;
+            text-align: center;
+            font-family: 'Roboto', "Helvetica", "Arial", sans-serif;
+        }
+        
+        div {
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2px;
+        }
+        
+        #average-price {
+            border: none;
+            font-size: 2em;
+            color: #fff;
+        }
+        
+        #electricity-container {
+            border: none;
+            padding: 20px;
+        }
+        
+        .current-hour {
+            font-size: 2em;
+            border: 2px solid #b2e2f2;
+        }
+        
+        .past-hour {
+            background-color: #c5c6c8;
+        }
+        
+        .min-price {
+            background-color: #77dd77;
+            font-size: 2em;
+        }
+        
+        .max-price {
+            background-color: #ff6961;
+            color: #fff;
+        }
+        
+        .lower-than-average {
+            background-color: #b0f2c2;
+        }
+        
+        .higher-than-average {
+            background-color: #fcb7af;
+        }
+        
+       
+    </style>
+</head>
+<body>
+  <div id="average-price" class="gradient-border"></div>
+  <div id="electricity-container"></div>
+  <a href="precio-electricidad-miAPI.html">Precio con API de api.preciodelaluz.org</a>
+  <div class="advertisement">Espacio para publicidad</div>
+
+  <script>
+    // Mover el código JavaScript aquí
+    var container = document.getElementById('electricity-container');
+    var currentDate = new Date();
+
+
+    // URL de la API
+var apiUrl = 'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=' +
+    formatDate(currentDate) + '00:00&end_date=' + formatDate(getTomorrowDate(currentDate)) + '23:59&time_trunc=hour';
+
+// ... Resto del código ...
+
+// Función para formatear la fecha en el formato necesario para la URL de la API
+function formatDate(date) {
+    var year = date.getFullYear();
+    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+    var day = date.getDate().toString().padStart(2, '0');
+    return year + month + day;
+}
+
+// Función para obtener la fecha de mañana
+function getTomorrowDate(date) {
+    var tomorrow = new Date(date);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+}
+
+
+    // Obtener los datos de la API
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Obtener los datos de los precios de electricidad
+            var pricesData = data.included.find(item => item.type === 'PVPC (\u20ac/MWh)').attributes.values;
+
+            // Calcular precio medio del día
+            var totalPrices = pricesData.reduce((sum, item) => sum + item.value, 0);
+            var averagePrice = (totalPrices / pricesData.length).toFixed(2);
+
+            // Obtener el día de la API en formato Lunes 15 de Mayo
+            var apiDate = new Date(data.data.attributes['last-update']);
+            var apiDay = apiDate.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+
+            // Mostrar el precio medio del día en el div superior
+            var averagePriceDiv = document.getElementById('average-price');
+            averagePriceDiv.innerHTML = 'El precio medio de la luz hoy ' + apiDay + ' es de ' + ((averagePrice / 1000)).toFixed(3) + ' € por Kilovatio';
+
+           // Recorrer los datos y agregar divs al contenedor
+            pricesData.forEach(function(item) {
+                var datetime = new Date(item.datetime);
+                var price = item.value.toFixed(2);
+                var div = document.createElement('div');
+
+            div.classList.add(
+                datetime.getHours() === currentDate.getHours() ? 'current-hour' :
+                datetime < currentDate ? 'past-hour' :
+                item.value === getMinPrice(pricesData).value ? 'min-price' :
+                item.value === getMaxPrice(pricesData).value ? 'max-price' :
+                item.value < averagePrice ? 'lower-than-average' :
+                item.value > averagePrice ? 'higher-than-average' :
+                ''
+            );
+
+                var timeSpan = document.createElement('span');
+                timeSpan.innerHTML = getCurrentTime(datetime) + '<br>';
+                        
+                var priceSpan = document.createElement('span');
+                priceSpan.innerHTML = (price / 1000).toFixed(3) + ' € por Kilovatio';
+                        
+                div.appendChild(timeSpan);
+                div.appendChild(priceSpan);
+                container.appendChild(div);
+});
+
+        })
+        .catch(error => console.log('Error:', error));
+
+    // Función para obtener el precio mínimo
+    function getMinPrice(pricesData) {
+        return pricesData.reduce(function(min, item) {
+            return item.value < min.value ? item : min;
+        });
+    }
+
+    // Función para obtener el precio máximo
+    function getMaxPrice(pricesData) {
+        return pricesData.reduce(function(max, item) {
+            return item.value > max.value ? item : max;
+        });
+    }
+
+    // Función para obtener la hora actual en formato HH:00
+    function getCurrentTime(date) {
+  var formattedHours = date.getHours().toString().padStart(2, '0');
+  return `${formattedHours}:00`;
+}
+
+  </script>
+</body>
+</html>
+>>>>>>> ebacaf623aaeeef2e34d49b920da8400142a0a42
