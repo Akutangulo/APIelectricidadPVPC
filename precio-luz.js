@@ -5,8 +5,7 @@
  tomorrowDate.setDate(currentDate.getDate() + 1); 
  // Formatear las fechas en el formato necesario (YYYY-MM-DDTHH:mm) ISO 8601
  var startDate = formatDate(currentDate) + "T00:00";
- var endDate = formatDate(tomorrowDate) + "T23:59";
- 
+ var endDate = formatDate(tomorrowDate) + "T23:59"; 
  // Construir la URL de la API con las fechas dinámicas
  var apiUrl = "https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=" + startDate + "&end_date=" + endDate + "&time_trunc=hour";
  
