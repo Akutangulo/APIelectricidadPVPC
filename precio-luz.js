@@ -8,8 +8,7 @@
  var endDate = formatDate(tomorrowDate) + "T23:59"; 
  // Construir la URL de la API con las fechas dinámicas
  var apiUrl = "https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=" + startDate + "&end_date=" + endDate + "&time_trunc=hour";
- 
- // Función para formatear la fecha en el formato YYYY-MM-DD
+  // Función para formatear la fecha en el formato YYYY-MM-DD
  function formatDate(date) {
    var year = date.getFullYear();
    var month = (date.getMonth() + 1).toString().padStart(2, "0");
