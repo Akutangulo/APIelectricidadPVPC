@@ -17,8 +17,7 @@
  } 
  // Obtener el contenedor donde se mostrarán los precios
  var container = document.getElementById('electricity-container');
- var infoContainer = document.getElementById('informacion-container');
- 
+ var infoContainer = document.getElementById('informacion-container'); 
  // Obtener los datos de la API
  fetch(apiUrl)
    .then(response => response.json())
