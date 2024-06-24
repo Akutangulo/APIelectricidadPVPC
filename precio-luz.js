@@ -14,8 +14,7 @@
    var month = (date.getMonth() + 1).toString().padStart(2, "0");
    var day = date.getDate().toString().padStart(2, "0");
    return year + "-" + month + "-" + day;
- }
- 
+ } 
  // Obtener el contenedor donde se mostrarán los precios
  var container = document.getElementById('electricity-container');
  var infoContainer = document.getElementById('informacion-container');
