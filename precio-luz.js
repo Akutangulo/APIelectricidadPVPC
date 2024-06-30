@@ -1,4 +1,4 @@
-  // Obtener la fecha actual
+// Obtener la fecha actual
  var currentDate = new Date();
  // Obtener la fecha de mañana
  var tomorrowDate = new Date();
