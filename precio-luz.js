@@ -23,8 +23,7 @@
    .then(response => response.json())
    .then(data => {
      // Obtener los datos de los precios de electricidad
-     var pricesData = data.included.find(item => item.type === 'PVPC (\u20ac/MWh)').attributes.values;
- 
+     var pricesData = data.included.find(item => item.type === 'PVPC (\u20ac/MWh)').attributes.values; 
      // Obtener la hora actual
      var currentHour = new Date().getHours();
  
